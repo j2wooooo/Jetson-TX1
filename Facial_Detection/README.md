@@ -1,4 +1,5 @@
-<Goal now on>
+
+*Goal now on*
 1. write make file for compile
 2. improve this code for finding only big size of faces(sometimes it thinks sth small face wrongly)
 
