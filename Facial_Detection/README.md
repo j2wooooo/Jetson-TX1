@@ -3,7 +3,8 @@
 1. write make file for compile
 2. improve this code for finding only big size of faces(sometimes it thinks sth small face wrongly)
 
-
+*done*
+detected face, eyes, lib with haar cascade and improved speed a little bit and ... 
 
 I tried->
 $ gcc -std=c++11 facial_detection.cpp -o facial_detection -L/usr/lib -lstdc++ -lopencv_core -lopencv_highgui -lopencv_videoio
@@ -25,3 +26,6 @@ for this case : gcc -std=c++11 facial_detection.cpp -o facial_detection -Xlinker
 
 => It didn't work for me.
 
+
+*reference
+https://docs.opencv.org/master/d1/de5/classcv_1_1CascadeClassifier.html#aaf8181cb63968136476ec4204ffca498
