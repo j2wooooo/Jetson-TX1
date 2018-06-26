@@ -20,7 +20,42 @@ CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 CascadeClassifier mouth_cascade;
 string window_name = "Capture - Face detection";
+const int BORDER = 8;  // Border between GUI elements to the edge of the image.
 RNG rng(12345);
+
+// Draw text into an image. Defaults to top-left-justified text, but you can give negative x coords for right-justified text,
+// and/or negative y coords for bottom-justified text.
+// Returns the bounding rect around the drawn text.
+Rect drawString(Mat img, string text, Point coord, Scalar color, float fontScale = 0.6f, int thickness = 1, int fontFace = FONT_HERSHEY_COMPLEX)
+{
+	// Get the text size & baseline.
+	int baseline = 0;
+	Size textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
+	baseline += thickness;
+
+	// Adjust the coords for left/right-justified or top/bottom-justified.
+	if (coord.y >= 0) {
+		// Coordinates are for the top-left corner of the text from the top-left of the image, so move down by one row.
+		coord.y += textSize.height;
+	}
+	else {
+		// Coordinates are for the bottom-left corner of the text from the bottom-left of the image, so come up from the bottom.
+		coord.y += img.rows - baseline + 1;
+	}
+	// Become right-justified if desired.
+	if (coord.x < 0) {
+		coord.x += img.cols - textSize.width + 1;
+	}
+
+	// Get the bounding box around the text.
+	Rect boundingRect = Rect(coord.x, coord.y - textSize.height, textSize.width, baseline + textSize.height);
+
+	// Draw anti-aliased text.
+	putText(img, text, coord, fontFace, fontScale, color, thickness, CV_AA);
+
+	// Let the user know how big their text is, in case they want to arrange things.
+	return boundingRect;
+}
 
 /** @function main */
 int main(int argc, const char** argv)
@@ -83,13 +118,26 @@ void detectAndDisplay(Mat frame)
 			int radius = cvRound((eyes[j].width + eyes[j].height)*0.25);
 			circle(frame, center, radius, Scalar(255, 0, 0), 4, 8, 0);
 		}
-		for (size_t k = 0; k<mouth.size(); k++)
-		{
-			Point pt1(mouth[0].x + faces[i].x, mouth[0].y + faces[i].y);
-			Point pt2(pt1.x + mouth[0].width, pt1.y + mouth[0].height);
-			rectangle(frame, pt1, pt2, Scalar(255, 255, 255), 4, 8, 0);
+
+		Rect rcHelp;
+		if (mouth.size()<1) {
+			// Draw it with a black background and then again with a white foreground.
+			// Since BORDER may be 0 and we need a negative position, subtract 2 from the border so it is always negative.
+			float txtSize = 0.4;
+			drawString(frame, "Take Off The Cold Mask Please", Point(BORDER, -BORDER - 2), CV_RGB(0, 0, 0), txtSize);  // Black shadow.
+			rcHelp = drawString(frame, "Take Off The Cold Mask Please", Point(BORDER + 1, -BORDER - 1), CV_RGB(0, 0, 0), txtSize);  // White text.
 		}
+		else{
+			for (size_t k = 0; k<mouth.size(); k++)
+			{
+				Point pt1(mouth[0].x + faces[i].x, mouth[0].y + faces[i].y);
+				Point pt2(pt1.x + mouth[0].width, pt1.y + mouth[0].height);
+				rectangle(frame, pt1, pt2, Scalar(255, 255, 255), 4, 8, 0);
+			}
+		}
+		
 	}
 	//-- Show what you got
 	//imshow(window_name, frame);
 }
+
