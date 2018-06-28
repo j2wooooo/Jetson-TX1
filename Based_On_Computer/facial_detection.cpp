@@ -90,6 +90,9 @@ int main(int argc, const char** argv)
 /** @function detectAndDisplay */
 void detectAndDisplay(Mat frame)
 {
+	// vidieostream 에서 capture 열장 찍는 걸로 변경 
+	// 캡처 사진 imgage 에서 영상처리하기! 
+	// 왜였더라? 
 	std::vector<Rect> faces;
 	Mat frame_gray;
 
