@@ -6,35 +6,106 @@
 using namespace std;
 using namespace cv;
 
-/* ÇÔ¼ö */
+/* í•¨ìˆ˜ */
 void collect_trainImage(Mat& trainingData, Mat& labels, int Nimages);
 void write_traindata(string fn, Mat trainingData, Mat classes);
+Mat preprocessing(Mat& image);
 
 void main() {
 	Mat trainingData, labels;
-	collect_trainImage(trainingData, labels, 70); // ÇĞ½À µ¥ÀÌÅÍ »ı¼º
-	write_traindata("SVMDATA.xml", trainingData, labels);     // ÆÄÀÏ ÀúÀå
+	collect_trainImage(trainingData, labels, 70); // í•™ìŠµ ë°ì´í„° ìƒì„±
+	write_traindata("SVMDATA.xml", trainingData, labels);     // íŒŒì¼ ì €ì¥
 }
 
 void collect_trainImage(Mat& trainingData, Mat& labels, int Nimages) {  // Nimages= 35 + 35
-	for (int i = 0; i < Nimages; i++) {
-		printf("ÀÌ¹ÌÁö Ãâ·ÂÇØº¼°Ô %d.png\n",i);
-		string fname = format("C:\\Users\\wwwo3\\source\\repos\\OpenCV Test\\OpenCV Test\\trainimage\\%d.png",i);
-		//"C:\\opencv-3.4\\sources\\data\\haarcascades\\haarcascade_frontalface_alt.xml"
-		Mat img = imread(fname,0);
-		CV_Assert(img.data);
+	/*
+	string fname = format("C:\\Users\\wwwo3\\source\\repos\\OpenCV Test\\OpenCV Test\\trainimage\\%d.png", 38);
+	Mat img = imread(fname, IMREAD_COLOR);
+	CV_Assert(img.data);
+	
+	//if (img.empty()) {
+	//	printf("couldn't load image !\n");
+	//	return;
+	//}
+	//else {
+		preprocessing(img);
+	//}
+	
+	*/
 
-		Mat tmp = img.reshape(1, 1);  // ÇĞ½À ¿µ»óÀ» 1Çà µ¥ÀÌÅÍ·Î ¸¸µé±â
-		int label = (i < 35) ? 1 : 0;  // 0~69¹ø ÀÌ¹ÌÁö´Â ¼±±Û¶ó½º, 70~139¹ø ÀÌ¹ÌÁö´Â ¼±±Û¶ó½º ¾Æ´Ñ°Å
-		trainingData.push_back(tmp);
-		labels.push_back(label);
+	
+	for (int i = 0; i < Nimages; i++) {
+	printf("ì´ë¯¸ì§€ ì¶œë ¥í•´ë³¼ê²Œ %d.png\n",i);
+	string fname = format("C:\\Users\\wwwo3\\source\\repos\\OpenCV Test\\OpenCV Test\\trainimage\\%d.png",i);
+	//"C:\\opencv-3.4\\sources\\data\\haarcascades\\haarcascade_frontalface_alt.xml"
+	Mat img = imread(fname, IMREAD_COLOR);
+	CV_Assert(img.data);
+	cvtColor(img, img, CV_BGR2GRAY);
+
+	Mat tmp = img.reshape(1, 1);  // í•™ìŠµ ì˜ìƒì„ 1í–‰ ë°ì´í„°ë¡œ ë§Œë“¤ê¸°
+	int label = (i < 35) ? 1 : 0;  // 0~69ë²ˆ ì´ë¯¸ì§€ëŠ” ì„ ê¸€ë¼ìŠ¤, 70~139ë²ˆ ì´ë¯¸ì§€ëŠ” ì„ ê¸€ë¼ìŠ¤ ì•„ë‹Œê±°
+	trainingData.push_back(tmp);
+	labels.push_back(label);
 	}
 	trainingData.convertTo(trainingData, CV_32FC1);
+	
 }
 
 void write_traindata(string fn, Mat trainingData, Mat classes) {
-	FileStorage fs(fn, FileStorage::WRITE); // ÀúÀå¸ğµå
-	fs << "trainingData" << trainingData; // ÇĞ½À µ¥ÀÌÅÍ Çà·Ä ÀúÀå
-	fs << "classes" << classes; // ·¹ÀÌºí°ª Çà·Ä ÀúÀå
+	FileStorage fs(fn, FileStorage::WRITE); // ì €ì¥ëª¨ë“œ
+	fs << "trainingData" << trainingData; // í•™ìŠµ ë°ì´í„° í–‰ë ¬ ì €ì¥
+	fs << "classes" << classes; // ë ˆì´ë¸”ê°’ í–‰ë ¬ ì €ì¥
 	fs.release();
+}
+
+Mat preprocessing(Mat& image) {  // ì´ë¯¸ì§€ í•™ìŠµì‹œí‚¤ê¸° ì „ì— ì „ì²˜ë¦¬í•´ì•¼í•˜ëŠ”ë° ì´ê²Œ ë§ëŠ”ì§€ ëª¨ë¥´ê² ìŒ
+	Mat gray, th_img, morph;
+	Mat kernel(5, 15, CV_8UC1, Scalar(1));  // ë‹«í˜ ì—°ì‚° ë§ˆìŠ¤í¬
+	
+	imshow("origin image", image);
+	//waitKey(0);
+	if (image.empty()) {
+		
+	}
+	else {
+
+		// ì—ëŸ¬ ì´ìœ  : image has different type 
+		//cvtColor(image, gray, CV_BGR2HSV);
+		//cvtColor(image, gray, CV_RGB2HSV);
+		cvtColor(image, gray, CV_BGR2GRAY);
+		imshow("gray image", gray);
+		waitKey(0);
+		
+
+		/*
+		if (image.channels() ==3) {  // ë°ìŠ¤í¬í†± 3ì±„ë„ BGR
+			cvtColor(image, gray, CV_BGR2GRAY);
+		}
+		else {  // ëª¨ë°”ì¼ 4ì±„ë„ BGRA
+			cvtColor(image, gray, CV_BGRA2GRAY);
+		}
+		*/
+		
+		//blur(gray, gray, Size(5, 5)); // ë¸”ëŸ¬ë§
+		//Sobel(gray, gray, CV_8U, 1, 0, 3); // ì†Œë²¨ ì—ì§€ ê²€ì¶œ
+
+		threshold(gray, th_img, 120, 255, THRESH_BINARY); //ì´ì§„í™” ìˆ˜í–‰
+		morphologyEx(th_img, morph, MORPH_CLOSE, kernel, Point(-1, -1), 2); // ì—´ë¦¼ ì—°ì‚° ìˆ˜í–‰
+
+		imshow("th_img", th_img), imshow("morph", morph);
+		return morph;
+	}
+
+	/*
+	//cvtColor(image, gray, COLOR_BGR2GRAY);
+	
+	//cvtColor(image, gray, CV_BGR2GRAY);  // ëª…ì•”ë„ ì˜ìƒ ë³€í™˜
+	blur(gray, gray, Size(5, 5)); // ë¸”ëŸ¬ë§
+	Sobel(gray, gray, CV_8U, 1, 0, 3); // ì†Œë²¨ ì—ì§€ ê²€ì¶œ
+
+	threshold(gray, th_img, 120, 255, THRESH_BINARY); //ì´ì§„í™” ìˆ˜í–‰
+	morphologyEx(th_img, morph, MORPH_CLOSE, kernel, Point(-1,-1), 2); // ì—´ë¦¼ ì—°ì‚° ìˆ˜í–‰
+	
+	imshow("th_img", th_img), imshow("morph", morph);
+	return morph;*/
 }
