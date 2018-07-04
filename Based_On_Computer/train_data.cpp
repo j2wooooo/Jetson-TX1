@@ -6,47 +6,50 @@
 using namespace std;
 using namespace cv;
 
-void read_trainData(string fn, Mat& trainingData, Mat& labels) {
-	FileStorage fs(fn, FileStorage::READ); // ÆÄÀÏ½ºÅä¸®Áö °´Ã¼ »ı¼º
-	//CV_Assert(fs.isOpened()); // ¿¹¿ÜÃ³¸®
+void read_trainData(string fn, Mat& trainingData, Mat& labels) { // íŒŒì¼ë¡œ ì €ì¥ëœ í•™ìŠµë°ì´í„°ë¥¼ ì½ì–´ì„œ í–‰ë ¬(trainingData, labels)ì— ì €ì¥
+	FileStorage fs(fn, FileStorage::READ); // íŒŒì¼ìŠ¤í† ë¦¬ì§€ ê°ì²´ ìƒì„±
+	CV_Assert(fs.isOpened()); // ì˜ˆì™¸ì²˜ë¦¬
 	
-	fs["TrainingData"] >> trainingData; // ÇĞ½Àµ¥ÀÌÅÍ Çà·Ä·Î ÀĞ±â
-	fs["classes"] >> labels; //·¹ÀÌºí°ª Çà·Ä·Î ÀĞ±â
+	fs["trainingData"] >> trainingData; // í•™ìŠµë°ì´í„° í–‰ë ¬ë¡œ ì½ê¸°
+	fs["classes"] >> labels; //ë ˆì´ë¸”ê°’ í–‰ë ¬ë¡œ ì½ê¸°
 	fs.release();
-	trainingData.convertTo(trainingData, CV_32FC1); //floatÇü º¯È¯ -> SVM ÇĞ½ÀÇÏ·Á¸é µ¥ÀÌÅÍ Çà·ÄÀº floatÇüÀÌ¿©¾ßÇÔ
-	
+	if (!trainingData.empty()) {
+		printf("trainingData í–‰ ê°œìˆ˜ : %d\n",trainingData.rows);
+	}
+	trainingData.convertTo(trainingData, CV_32FC1); //floatí˜• ë³€í™˜ -> SVM í•™ìŠµí•˜ë ¤ë©´ ë°ì´í„° í–‰ë ¬ì€ floatí˜•ì´ì—¬ì•¼í•¨	
 }
 
 Ptr<ml::SVM> SVM_create(int type, int max_iter, double epsilon) {
-	Ptr<ml::SVM> svm = ml::SVM::create(); //SVM °´Ã¼¼±¾ğ -> Ptr Å¬·¡½ºÀÇ Æ÷ÀÎÅÍ
-	// ÀÌ°Å ¿À·ù³ª¼­ ¼öÁ¤
+	Ptr<ml::SVM> svm = ml::SVM::create(); //SVM ê°ì²´ì„ ì–¸ -> Ptr í´ë˜ìŠ¤ì˜ í¬ì¸í„°
+	// ì´ê±° ì˜¤ë¥˜ë‚˜ì„œ ìˆ˜ì •
 
-	/*SVM ÇĞ½ÀÇÏ±âÀ§ÇØ ¼¼ºÎ ÆÄ¶ó¹ÌÅÍ ÁöÁ¤*/
+	/*SVM í•™ìŠµí•˜ê¸°ìœ„í•´ ì„¸ë¶€ íŒŒë¼ë¯¸í„° ì§€ì •*/
 	svm->setType(ml::SVM::C_SVC); //C-Support Vector Classification
-	svm->setKernel(ml::SVM::LINEAR); // ¼±Çü SVM
-	svm->setGamma(1); // Ä¿³ÎÇÔ¼öÀÇ °¨¸¶°ª
-	svm->setC(1);  // ÃÖÀûÈ­¸¦ À§ÇÑ C ÆÄ¶ó¹ÌÅÍ
+	svm->setKernel(ml::SVM::LINEAR); // ì„ í˜• SVM
+	svm->setGamma(1); // ì»¤ë„í•¨ìˆ˜ì˜ ê°ë§ˆê°’
+	svm->setC(1);  // ìµœì í™”ë¥¼ ìœ„í•œ C íŒŒë¼ë¯¸í„°
 
 	TermCriteria criteria(type, max_iter, epsilon);
-	// type : ¹İº¹ ¾Ë°í¸®ÁòÀÇ ¹æ¹ı °áÁ¤ (Áö±İÀº ÃÖ´ë 1000¹ø ¹İº¹ ÇĞ½À) 
-	// -> CV_TERMCRIT_ITER : ¹İº¹È½¼ö¸¦ ±âÁØÀ¸·Î ¹İº¹ / CV_TERMCRIT_EPS : Á¤È®µµ¸¦ ±âÁØÀ¸·Î ¹İº¹
-	// max_iter : ÃÖ´ë ¹İº¹¼ö ¹İº¹¾Ë°í¸®ÁòÀ» À§ÇÑ Á¶°ÇÀ¸·Î 
-	// epsilon : Á¤È®µµ
+	// type : ë°˜ë³µ ì•Œê³ ë¦¬ì¦˜ì˜ ë°©ë²• ê²°ì • (ì§€ê¸ˆì€ ìµœëŒ€ 1000ë²ˆ ë°˜ë³µ í•™ìŠµ) 
+	// -> CV_TERMCRIT_ITER : ë°˜ë³µíšŸìˆ˜ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ë°˜ë³µ / CV_TERMCRIT_EPS : ì •í™•ë„ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ë°˜ë³µ
+	// max_iter : ìµœëŒ€ ë°˜ë³µìˆ˜ ë°˜ë³µì•Œê³ ë¦¬ì¦˜ì„ ìœ„í•œ ì¡°ê±´ìœ¼ë¡œ 
+	// epsilon : ì •í™•ë„
 
-	svm->setTermCriteria(criteria); // ÇĞ½À ¹İº¹Á¶°Ç ÁöÁ¤
+	svm->setTermCriteria(criteria); // í•™ìŠµ ë°˜ë³µì¡°ê±´ ì§€ì •
 	return svm;
 }
 
 int main() {
 	Mat trainingData, labels;
 	read_trainData("C:\\Users\\wwwo3\\source\\repos\\OpenCV Test\\OpenCV Test\\SVMDATA.xml",trainingData,labels);
-	if (trainingData.empty()) {
-		printf("svmdata.xml ÀĞ¾î¿ÀÁö ¸øÇßÀ½\n");
-	}
 	
-	// SVM °´Ã¼ ¼±¾ğ
+	
+	// SVM ê°ì²´ ì„ ì–¸
 	Ptr<ml::SVM> svm = SVM_create(CV_TERMCRIT_ITER, 1000, 0); 
-	svm->train(trainingData, ml::ROW_SAMPLE, labels); // ÇĞ½À ¼öÇà
+	trainingData = trainingData.reshape(1,trainingData.rows);  // ëŒ€ë°• -> svm í•˜ë ¤ë©´ ë°ì´í„°ê°€ 1*n í˜•íƒœì—¬ì•¼ í•¨
+	svm->train(trainingData, ml::ROW_SAMPLE, labels); // í•™ìŠµ ìˆ˜í–‰
 	svm->save("C:\\Users\\wwwo3\\source\\repos\\OpenCV Test\\OpenCV Test\\SVMtrain.xml");
+	
+	
 	return 0;
 }
