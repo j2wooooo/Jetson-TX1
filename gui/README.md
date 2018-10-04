@@ -7,3 +7,6 @@ https://github.com/AliView/AliView/issues/17
 
 # conferrence
 https://thishosting.rocks/install-java-ubuntu/
+
+# conference#
+http://all-record.tistory.com/181
