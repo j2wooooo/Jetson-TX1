@@ -1,47 +1,50 @@
 package test;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 
 public class atmView extends JFrame implements ActionListener{
 	private JButton btnStart,btnHelp;
+	private Label tf;
 
 	public atmView(String title) {
 		
-		/*À©µµ¿ì ±¸¼º*/
-		// - À©µµ¿ì ÇÁ·Î±×·¥Àº ¿ìÃøÀÇ À©µµ¿ì Á¾·á ¹öÆ°À» ´©¸£¸é
-		// È­¸é¿¡¼­ »ç¶óÁö±â´Â ÇÏÁö¸¸, ¿ÏÀüÈ÷ ÇÁ·Î±×·¥ÀÌ Á¾·áµÇÁö´Â ¾ÊÀ½.
-		// - À©µµ¿ìÀÇ Á¾·á ¹öÆ°À¸·Î ÇÁ·Î±×·¥µµ ÇÔ²² Á¾·áÇÏ±â À§ÇÑ ¸Ş¼Òµå È£Ãâ.
+		/*ìœˆë„ìš° êµ¬ì„±*/
+		// - ìœˆë„ìš° í”„ë¡œê·¸ë¨ì€ ìš°ì¸¡ì˜ ìœˆë„ìš° ì¢…ë£Œ ë²„íŠ¼ì„ ëˆ„ë¥´ë©´
+		// í™”ë©´ì—ì„œ ì‚¬ë¼ì§€ê¸°ëŠ” í•˜ì§€ë§Œ, ì™„ì „íˆ í”„ë¡œê·¸ë¨ì´ ì¢…ë£Œë˜ì§€ëŠ” ì•ŠìŒ.
+		// - ìœˆë„ìš°ì˜ ì¢…ë£Œ ë²„íŠ¼ìœ¼ë¡œ í”„ë¡œê·¸ë¨ë„ í•¨ê»˜ ì¢…ë£Œí•˜ê¸° ìœ„í•œ ë©”ì†Œë“œ í˜¸ì¶œ.
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(500,400);
 		setTitle(title);
 		
-		/*¹öÆ° ±¸¼º*/
-		//setLayout - ¹èÄ¡°ü¸®ÀÚ°¡ ¾ø´Â ÄÁÅ×ÀÌ³Ê ¸¸µé±â
+		/*ë²„íŠ¼ êµ¬ì„±*/
+		//setLayout - ë°°ì¹˜ê´€ë¦¬ìê°€ ì—†ëŠ” ì»¨í…Œì´ë„ˆ ë§Œë“¤ê¸°
 		setLayout(null);
 		btnStart = new JButton("Start");
 		btnHelp = new JButton("?");
-		// ¹öÆ°ÀÇ Àû´çÇÑ °¡·Î¿Í ¼¼·Î¸¦ ¾Ë¾Æº¸±â
+		tf = new Label("CashKeeper, ATM for crim prevention");
+		// ë²„íŠ¼ì˜ ì ë‹¹í•œ ê°€ë¡œì™€ ì„¸ë¡œë¥¼ ì•Œì•„ë³´ê¸°
 		// Dimension d = btnStart.getPreferredSize(); 
 		// btnStart.setSize(d);
 		btnStart.setSize(100, 30);
-		btnHelp.setSize(50,30);
+		btnHelp.setSize(80,30);
+		tf.setSize(300, 50);
 		//btnHelp.setBackground(Color.BLACK);
 	
 		btnStart.setLocation(200, 170);
-		btnHelp.setLocation(430,10);
+		btnHelp.setLocation(400,10);
+		tf.setLocation(150, 100);
 		add(btnStart);
 		add(btnHelp);
+		add(tf);
 		
 		
-		/*¹öÆ°ÀÇ ÀÌº¥Æ® ¸®½º³Ê Ãß°¡*/
+		/*ë²„íŠ¼ì˜ ì´ë²¤íŠ¸ ë¦¬ìŠ¤ë„ˆ ì¶”ê°€*/
 		btnStart.addActionListener(this);
 		btnHelp.addActionListener(this);
 		
@@ -49,25 +52,46 @@ public class atmView extends JFrame implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent evt) {
-		//Å¬¸¯µÈ ¹öÆ°ÀÇ ÀÌ¸§À» ÀúÀå
+		//í´ë¦­ëœ ë²„íŠ¼ì˜ ì´ë¦„ì„ ì €ì¥
 		String strCmd = evt.getActionCommand();
 		
-		//·¹ÀÌºí¿¡ Å¬¸¯µÈ ¹öÆ°ÀÇ ÀÌ¸§À» ÁöÁ¤
+		//ë ˆì´ë¸”ì— í´ë¦­ëœ ë²„íŠ¼ì˜ ì´ë¦„ì„ ì§€ì •
 		if(strCmd.equals("Start")) {
-			//btnStart.setText("¹öÆ° ´­¸²");
-			callCommand("ipconfig");
+			callCommand("ipconfig"); // linux : ifconfig
 		}else if(strCmd.equals("?")) {
-			btnHelp.setText("¹öÆ°");
+			btnHelp.setText("ë²„íŠ¼");
+			
+			/* ì‚¬ìš©ë²• ì„¤ëª… pop up */
+			JFrame fh = new JFrame();
+			fh.setLayout(null);
+			fh.setTitle("How to use Cash Keeper");
+			fh.setSize(450, 350);
+			
+			// text
+			Label h= new Label("PLEASE take off your sunglasses and mask, and show your face.");
+			h.setSize(400,50);
+			h.setLocation(50, 20);
+			fh.add(h);
+			
+			// image
+			//File sourceImage = new File("C:\\Users\\wwwo3\\eclipse-workspace\\test\\src\\test\\img.PNG");
+			ImageIcon img = new ImageIcon("C:\\Users\\wwwo3\\eclipse-workspace\\test\\src\\test\\img.PNG");
+			JLabel ImgBox = new JLabel(img);
+			ImgBox.setBounds(80,80,img.getIconWidth(),img.getIconHeight());
+			fh.add(ImgBox);
+			
+			fh.setVisible(true);
 		}
 	}
 	
-	// ¸®´ª½º ¸í·É¾î ½ÇÇà½ÃÅ°´Â ÇÔ¼ö
+	// ë¦¬ëˆ…ìŠ¤ ëª…ë ¹ì–´ ì‹¤í–‰ì‹œí‚¤ëŠ” í•¨ìˆ˜
 	public void callCommand(String command) {
 		
 		Runtime rt = Runtime.getRuntime();
 		
 		try {
 			Process p = rt.exec(command);
+			System.out.println(p);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -75,9 +99,19 @@ public class atmView extends JFrame implements ActionListener{
 		
 	}
 	
+	
+	public void howToUse() {
+		System.out.println("how to use frame ë“¤ì–´ì˜´");
+		setTitle("How to use Cash Keeper");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLayout(null);
+		setSize(450,350);
+		setVisible(true);
+	}
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		System.out.println("ÀÚ¹Ù Å×½ºÆ®");
+		System.out.println("ìë°” í…ŒìŠ¤íŠ¸");
 		
 		atmView av=new atmView("ATM GUI");
 		
