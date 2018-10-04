@@ -1,12 +1,14 @@
 package test;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 public class atmView extends JFrame implements ActionListener{
 	private JButton btnStart,btnHelp;
@@ -59,7 +61,7 @@ public class atmView extends JFrame implements ActionListener{
 		if(strCmd.equals("Start")) {
 			callCommand("ipconfig"); // linux : ifconfig
 		}else if(strCmd.equals("?")) {
-			btnHelp.setText("버튼");
+			btnHelp.setText("help");
 			
 			/* 사용법 설명 pop up */
 			JFrame fh = new JFrame();
@@ -75,7 +77,7 @@ public class atmView extends JFrame implements ActionListener{
 			
 			// image
 			//File sourceImage = new File("C:\\Users\\wwwo3\\eclipse-workspace\\test\\src\\test\\img.PNG");
-			ImageIcon img = new ImageIcon("C:\\Users\\wwwo3\\eclipse-workspace\\test\\src\\test\\img.PNG");
+			ImageIcon img = new ImageIcon("img.png");
 			JLabel ImgBox = new JLabel(img);
 			ImgBox.setBounds(80,80,img.getIconWidth(),img.getIconHeight());
 			fh.add(ImgBox);
@@ -101,7 +103,7 @@ public class atmView extends JFrame implements ActionListener{
 	
 	
 	public void howToUse() {
-		System.out.println("how to use frame 들어옴");
+		System.out.println("how to use frame");
 		setTitle("How to use Cash Keeper");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(null);
@@ -111,7 +113,7 @@ public class atmView extends JFrame implements ActionListener{
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		System.out.println("자바 테스트");
+		System.out.println("java test");
 		
 		atmView av=new atmView("ATM GUI");
 		
