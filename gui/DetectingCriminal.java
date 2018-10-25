@@ -24,12 +24,17 @@ import java.io.IOException;
 public class DetectingCriminal extends JFrame implements ActionListener{
 
 	private static String user_identification; // user_identification = 1,  if hwayoung
-	                         //                     = 2,  if hayoung
+												//                     = 2,  if hayoung
 	private static String detection_date_time;
 	private static String detection_accuracy;
 	private static Dimension dimen;
 	
 	public DetectingCriminal() {
+		
+		// background image
+		ImageIcon back_icon = new ImageIcon("back.png");
+		Image background_img = back_icon.getImage().getScaledInstance(742,599,java.awt.Image.SCALE_SMOOTH); // resize image
+		setContentPane(new JLabel(new ImageIcon(background_img)));
 		
 		/* full screen - in window
 		this.setExtendedState( getExtendedState() | this.MAXIMIZED_BOTH);
@@ -45,17 +50,15 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 		
 		setLayout(null);
 		
-		JLabel title = new JLabel("DETECTED THE CRIMINAL");
-		title.setBounds(100, 50,500,100);
-		title.setFont(new Font("Serif",Font.ITALIC,30));
-		
 		//load image
 		ImageIcon criminal_img;
 		ImageIcon usr_img;
 		
 		if(user_identification.equals(new String("1"))) {                // user - hwayoung
 			criminal_img = new ImageIcon("crimial_hwa.jpg");
-			usr_img = new ImageIcon("atm_user.jpg");
+			usr_img = new ImageIcon("/home/nvidia/darkent/pictures/"+detection_date_time+".jpg");
+		
+			
 		}else {                                      // user - hayoung
 			criminal_img = new ImageIcon("img.png");
 			usr_img = new ImageIcon("img.png");
@@ -66,32 +69,34 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 		criminal_img = new ImageIcon(new_criminal_img);
 		
 		JLabel criminal_ImgBox = new JLabel(criminal_img);
-		criminal_ImgBox.setBounds(30,150,criminal_img.getIconWidth(),criminal_img.getIconHeight());
+		criminal_ImgBox.setBounds(15,120,criminal_img.getIconWidth(),criminal_img.getIconHeight());
 		
 		// resize user image
 		Image new_user_img = usr_img.getImage().getScaledInstance(320,240,java.awt.Image.SCALE_SMOOTH); // resize image
 		usr_img = new ImageIcon(new_user_img);
 		
 		JLabel usr_ImgBox = new JLabel(usr_img);
-		usr_ImgBox.setBounds(380,150,usr_img.getIconWidth(),usr_img.getIconHeight());
+		usr_ImgBox.setBounds(380,120,usr_img.getIconWidth(),usr_img.getIconHeight());
 		
-		JLabel label_criminal = new JLabel("HWAYOUNG");
-		label_criminal.setBounds(100, 380,500,100);
-		label_criminal.setFont(new Font("Serif",Font.ITALIC,20));
+		// * ATM User Information*
+		// location
+		JLabel label_atm_use_location = new JLabel("119, Academy-ro, Yeonsu-gu ");
+		label_atm_use_location.setBounds(465,393,300,100);
+		label_atm_use_location.setFont(new Font("Serif",Font.BOLD,14));
+		// time
+		JLabel label_atm_use_time = new JLabel(detection_date_time);
+		label_atm_use_time.setBounds(435,418,300,100);
+		label_atm_use_time.setFont(new Font("Serif",Font.BOLD,15));
 		
-		JLabel label_user = new JLabel("ATM USER");
-		label_user.setBounds(500, 380,500,100);
-		label_user.setFont(new Font("Serif",Font.ITALIC,20));
 		
 		//JLabel label_accuracy = new JLabel("Index of Similarity : "+detection_accuracy +"% \n");	
-		JLabel label_accuracy = new JLabel("Index of Similarity : 0% \n");
-		label_accuracy.setBounds(180, 480,500,80);
-		label_accuracy.setFont(new Font("Serif",Font.ITALIC,30));
+		JLabel label_accuracy = new JLabel(" 0% \n");
+		label_accuracy.setBounds(460, 500,500,80);
+		label_accuracy.setFont(new Font("Serif",Font.BOLD,30));
 		label_accuracy.setForeground(Color.RED);
 		
-		this.add(title);
-		this.add(label_criminal);
-		this.add(label_user);
+		this.add(label_atm_use_location);
+		this.add(label_atm_use_time);
 		this.add(label_accuracy);
 		this.add(criminal_ImgBox);
 		this.add(usr_ImgBox);
@@ -103,7 +108,7 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 		//refresh frame
 		int accuracy = Integer.parseInt(detection_accuracy);
 		for(int i=0; i<=accuracy; i++) {
-			label_accuracy.setText("Index of Similarity : "+i +"% \n");
+			label_accuracy.setText(i +"% \n");
 			SwingUtilities.updateComponentTreeUI(this);
 			try {
 				Thread.sleep(30);
@@ -117,8 +122,7 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 	
 	class MyKeyListener extends KeyAdapter{
 		public void keyPressed(KeyEvent e) {
-			//System.out.println("pressed Key : "+e.getKeyCode());
-		
+			
 			if(e.getKeyCode()==27) { // end
 				System.exit(0);
 			}
@@ -128,18 +132,19 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 	
 	public static void main(String[] args) {
 		// 범죄자 누구인지(화영,하영) 이미지 캡쳐사진 이름, 검출 정확도
-		// 예시 : 3 hwayoung 2018-10-24xxx 92
-		
-		// java main 에서 args 값 받아와서 인자마다 따로 전역변수 저장해두기?
-		// gui 추가 - JLabel 범죄자 이름, 현재 사용자, 검출율  (+ ATM 사용시간)
+		// 예시 : hwayoung 2018-10-24xxx 92
 		
 		// TODO Auto-generated method stub
 		System.out.println("자바 테스트");
 		
-		// get args value  ***
-		user_identification = "1"; // args[0]
-		detection_date_time = "2018-10-24xxxx";// args[1]
-		detection_accuracy = "94"; // args[2]
+		// get args value
+		//user_identification = "1"; // args[0]
+		//detection_date_time = "2018-10-24_XXXX";// args[1]
+		//detection_accuracy = "94"; // args[2]
+		
+		user_identification = args[0]; // args[0] = 1 : hwayoung 
+		detection_date_time = args[1];// args[1] = "2018-10-24_XXX"
+		detection_accuracy = args[2]; // args[2] = "94"
 		
 		dimen = Toolkit.getDefaultToolkit().getScreenSize();
 		
