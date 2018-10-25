@@ -30,7 +30,7 @@ RNG rng(12345);
 string buf; // capture image name
 char path[100] = "/home/nvidia/darknet/pictures/";
 
-String img_name_path;
+string img_name_path;
 string file_name;
 
 char local_path[100];
@@ -92,6 +92,7 @@ void compare_facetoface()
 				
 	//make int number
 	int numberforpercent = stoi(stringfornumber);
+	string numberforpercent2 = to_string(numberforpercent);
 	cout<< "\n what is percent  :: "<<numberforpercent<<endl; // check using print
 	read.close();
 	system("rm Itisabouttheface.txt");
@@ -113,8 +114,8 @@ void compare_facetoface()
 			}
 		}
 	}else{ // case : criminal (hwayoung)
-		
-		string java_path_argument = "java DetectingCriminal 1 "+img_name_path+" "+numberforpercent;
+		cout<< "\n what is percent  :: "<<numberforpercent<<endl; // check using print
+		string java_path_argument = "java DetectingCriminal 1 "+img_name_path+" "+numberforpercent2;
 		//system("java DetectingCriminal 1 %s %s",img_name_path,stringfornumber);
 		system(java_path_argument.c_str());
 	}
