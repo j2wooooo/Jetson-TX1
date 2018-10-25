@@ -56,8 +56,7 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 		
 		if(user_identification.equals(new String("1"))) {                // user - hwayoung
 			criminal_img = new ImageIcon("crimial_hwa.jpg");
-			usr_img = new ImageIcon("/home/nvidia/darkent/pictures/"+detection_date_time+".jpg");
-		
+			usr_img = new ImageIcon("/home/nvidia/darknet/pictures/"+detection_date_time+".jpg");	
 			
 		}else {                                      // user - hayoung
 			criminal_img = new ImageIcon("img.png");
@@ -135,7 +134,6 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 		// 예시 : hwayoung 2018-10-24xxx 92
 		
 		// TODO Auto-generated method stub
-		System.out.println("자바 테스트");
 		
 		// get args value
 		//user_identification = "1"; // args[0]
@@ -145,7 +143,11 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 		user_identification = args[0]; // args[0] = 1 : hwayoung 
 		detection_date_time = args[1];// args[1] = "2018-10-24_XXX"
 		detection_accuracy = args[2]; // args[2] = "94"
-		
+				
+		//System.out.println("atm date time "+detection_date_time);
+		//System.out.println("accuracy "+detection_accuracy);
+
+
 		dimen = Toolkit.getDefaultToolkit().getScreenSize();
 		
 		DetectingCriminal av=new DetectingCriminal();
