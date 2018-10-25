@@ -14,10 +14,12 @@ import java.io.IOException;
 
 public class DetectingCriminal extends JFrame implements ActionListener{
 
-	private static int user_identification; // user_identification = 1,  if hwayoung
+	private static String user_identification; // user_identification = 1,  if hwayoung
 	                         //                     = 2,  if hayoung
+	private static String detection_date_time;
+	private static String detection_accuracy;
 	
-	public DetectingCriminal(int _user_identification) {
+	public DetectingCriminal() {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1300,600);
@@ -33,7 +35,7 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 		ImageIcon criminal_img;
 		ImageIcon usr_img;
 		
-		if(_user_identification==1) {                // user - hwayoung
+		if(user_identification.equals(new String("1"))) {                // user - hwayoung
 			criminal_img = new ImageIcon("criminal_hwayoung.png");
 			usr_img = new ImageIcon("user_hwayoung1.jpg");
 		}else {                                      // user - hayoung
@@ -45,9 +47,25 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 		criminal_ImgBox.setBounds(0,150,criminal_img.getIconWidth(),criminal_img.getIconHeight());
 		
 		JLabel usr_ImgBox = new JLabel(usr_img);
-		usr_ImgBox.setBounds(500,150,usr_img.getIconWidth(),usr_img.getIconHeight());
+		usr_ImgBox.setBounds(500,150,usr_img.getIconWidth()-30,usr_img.getIconHeight()-80);
+		
+		JLabel label_criminal = new JLabel("HWAYOUNG");
+		label_criminal.setBounds(100, 380,500,100);
+		label_criminal.setFont(new Font("Serif",Font.ITALIC,20));
+		
+		JLabel label_user = new JLabel("ATM USER");
+		label_user.setBounds(650, 380,500,100);
+		label_user.setFont(new Font("Serif",Font.ITALIC,20));
+		
+		JLabel label_accuracy = new JLabel("Index of Similarity : "+detection_accuracy +"% \n");	
+		label_accuracy.setBounds(130, 430,600,100);
+		label_accuracy.setFont(new Font("Serif",Font.ITALIC,50));
+		label_accuracy.setForeground(Color.RED);
 		
 		this.add(title);
+		this.add(label_criminal);
+		this.add(label_user);
+		this.add(label_accuracy);
 		this.add(criminal_ImgBox);
 		this.add(usr_ImgBox);
 		
@@ -66,9 +84,11 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 		System.out.println("자바 테스트");
 		
 		// get args value  ***
-		user_identification = 1;
+		user_identification = "1"; // args[0]
+		detection_date_time = "2018-10-24xxxx";// args[1]
+		detection_accuracy = "94"; // args[2]
 		
-		DetectingCriminal av=new DetectingCriminal(user_identification);
+		DetectingCriminal av=new DetectingCriminal();
 		
 	}
 
@@ -79,5 +99,3 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 		
 	}
 }
-
-
