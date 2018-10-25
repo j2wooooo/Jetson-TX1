@@ -30,10 +30,13 @@ RNG rng(12345);
 string buf; // capture image name
 char path[100] = "/home/nvidia/darknet/pictures/";
 
+String img_name_path;
 string file_name;
 
 char local_path[100];
 int flag = 0;
+
+string country[6] = {"Incheon", "Seoul", "Gwangju", "Busan", "Jeju", "Daegu"}; 
 
 std::string get_tegra_pipeline(int width, int height, int fps) {
 	return "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)" + std::to_string(width) + ", height=(int)" 
@@ -59,6 +62,8 @@ void capture_face(Mat frame, VideoCapture capture)
 
 	//capture.read(frame);
         buf = currentDateTime();
+	 
+	img_name_path = buf.c_str(); // java argument
 
         strcpy(local_path, path);
         strcat(local_path, buf.c_str());
@@ -74,15 +79,8 @@ void capture_face(Mat frame, VideoCapture capture)
 void compare_facetoface()
 {
 	system("clear");
-	cout<<"\nIt's time to compare your face!!\n"<<endl;
 
 	string str = "../darknet_face/darknet detector test ../darknet_face/data/obj.data ../darknet_face/yolo-obj.cfg ../darknet_face/backup/yolo-obj_1400.weights "+file_name;
-	
-	// demo - jetson tx1 camera 
-	//string str = "../darknet_face/darknet detector demo ../darknet_face/data/obj.data ../darknet_face/yolo-obj.cfg ../darknet_face/backup/yolo-obj_1400.weights ""nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink""";
-
-	// demo - usb webcam
-	//string str = "../darknet_face/darknet detector demo ../darknet_face/data/obj.data ../darknet_face/yolo-obj.cfg ../darknet_face/backup/yolo-obj_1400.weights ";
 
 	system(str.c_str());
 
@@ -101,10 +99,10 @@ void compare_facetoface()
 	if(numberforpercent < 90)//not criminal
 	{
 		Mat ATM_image1 = imread("atm_gui.png");
-	//namedWindow("first",CV_WINDOW_FULLSCREEN);
-		namedWindow("first",CV_WINDOW_NORMAL);
-		setWindowProperty("first",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-		imshow("first",ATM_image1);
+
+		namedWindow("ck_frame",CV_WINDOW_NORMAL);
+		setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+		imshow("ck_frame",ATM_image1);
 		waitKey(10);
 		while(1)
 		{
@@ -114,18 +112,127 @@ void compare_facetoface()
 				return;
 			}
 		}
+	}else{ // case : criminal (hwayoung)
+		
+		string java_path_argument = "java DetectingCriminal 1 "+img_name_path+" "+numberforpercent;
+		//system("java DetectingCriminal 1 %s %s",img_name_path,stringfornumber);
+		system(java_path_argument.c_str());
 	}
-	cout<<"\nIt's time to end your face !!\n"<<endl;
 }
 
 void imshow_retake()
 {
 	Mat Imageforsun = imread("predictions_mask_sun.jpg");
 	
-	namedWindow("wrong_detection",CV_WINDOW_NORMAL);
-	setWindowProperty("wrong_detection",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-	imshow("wrong_detection",Imageforsun);
+	namedWindow("ck_frame",CV_WINDOW_NORMAL);
+	setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+	imshow("ck_frame",Imageforsun);
 	waitKey(20);
+}
+
+void CountDownForTakingPhotos(VideoCapture _capture){
+	Mat streamFrame;
+	
+	// notify taking a photo
+	for(volatile int i=60; i>-1; i--){
+		_capture >> streamFrame;
+
+		if(!streamFrame.empty()){
+			putText(streamFrame, 
+				"Ready for taking photos",
+				Point(25,50), // rocate
+				FONT_HERSHEY_COMPLEX, // font
+				1.4, // scale 2.0 = 2x bigger
+ 				Scalar(255,255,255), // B,G,R color
+				4, // line thickness(optional)
+				CV_AA // anti-alias(optional)
+				);
+
+			putText(streamFrame, 
+				"Take off your accessory",
+				Point(65,100), // rocate
+				FONT_HERSHEY_COMPLEX, // font
+				1.2, // scale 2.0 = 2x bigger
+ 				Scalar(255,255,255), // B,G,R color
+				3, // line thickness(optional)
+				CV_AA // anti-alias(optional)
+				);
+			namedWindow("ck_frame",CV_WINDOW_NORMAL);
+			setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);	
+			imshow("ck_frame",streamFrame);
+
+			waitKey(10);
+		}
+	}
+	// count down
+	volatile int count = 3;
+	for(volatile int i=50; i>-1; i--){
+
+		_capture >> streamFrame;
+		
+		if(!streamFrame.empty()){
+			putText(streamFrame, 
+				to_string(count),
+				Point(200,400), // rocate
+				FONT_HERSHEY_SCRIPT_SIMPLEX, // font
+				15.0, // scale 2.0 = 2x bigger
+ 				Scalar(255,255,255), // B,G,R color
+				30, // line thickness(optional)
+				CV_AA // anti-alias(optional)
+				);
+			namedWindow("ck_frame",CV_WINDOW_NORMAL);
+			setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);	
+			imshow("ck_frame",streamFrame);
+			
+			waitKey(20);	
+		}
+	}
+
+	count =2;
+	for(volatile int i=50; i>-1; i--){
+
+		_capture >> streamFrame;
+		
+		if(!streamFrame.empty()){
+			putText(streamFrame, 
+				to_string(count),
+				Point(200,400), // rocate
+				FONT_HERSHEY_SCRIPT_SIMPLEX, // font
+				15.0, // scale 2.0 = 2x bigger
+ 				Scalar(255,255,255), // B,G,R color
+				30, // line thickness(optional)
+				CV_AA // anti-alias(optional)
+				);	
+			namedWindow("ck_frame",CV_WINDOW_NORMAL);
+			setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+			imshow("ck_frame",streamFrame);
+
+			waitKey(20);	
+		}
+	}
+
+	count=1;
+	for(volatile int i=30; i>-1; i--){
+
+		_capture >> streamFrame;
+		
+		if(!streamFrame.empty()){
+			putText(streamFrame, 
+				to_string(count),
+				Point(200,400), // rocate
+				FONT_HERSHEY_SCRIPT_SIMPLEX, // font
+				15.0, // scale 2.0 = 2x bigger
+ 				Scalar(255,255,255), // B,G,R color
+				30, // line thickness(optional)
+				CV_AA // anti-alias(optional)
+				);
+			namedWindow("ck_frame",CV_WINDOW_NORMAL);
+			setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);	
+			imshow("ck_frame",streamFrame);			
+			
+			waitKey(20);	
+		}
+	}
 }
 
 void retake_picture(VideoCapture _capture)
@@ -148,9 +255,9 @@ void retake_picture(VideoCapture _capture)
 		CV_AA // anti-alias(optional)
 
 		);
-	namedWindow("capture image",CV_WINDOW_NORMAL);
-	setWindowProperty("capture image",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-	imshow("capture image", Imageforsun);
+	namedWindow("ck_frame",CV_WINDOW_NORMAL);
+	setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+	imshow("ck_frame", Imageforsun);
 	
 	waitKey(1800); // 100ms
 
@@ -169,13 +276,12 @@ void retake_picture(VideoCapture _capture)
 				30, // line thickness(optional)
 				CV_AA // anti-alias(optional)
 				);
-			namedWindow("capture image",CV_WINDOW_NORMAL);
-			setWindowProperty("capture image",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);	
-			imshow("capture image",streamFrame);
+			namedWindow("ck_frame",CV_WINDOW_NORMAL);
+			setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);	
+			imshow("ck_frame",streamFrame);
 			
 			waitKey(20);	
 		}
-		cout<<"volatile int i : "<<i<<endl;
 	}
 
 	count =2;
@@ -193,9 +299,9 @@ void retake_picture(VideoCapture _capture)
 				30, // line thickness(optional)
 				CV_AA // anti-alias(optional)
 				);	
-			namedWindow("capture image",CV_WINDOW_NORMAL);
-			setWindowProperty("capture image",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-			imshow("capture image",streamFrame);
+			namedWindow("ck_frame",CV_WINDOW_NORMAL);
+			setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+			imshow("ck_frame",streamFrame);
 
 			waitKey(20);	
 		}
@@ -216,9 +322,9 @@ void retake_picture(VideoCapture _capture)
 				30, // line thickness(optional)
 				CV_AA // anti-alias(optional)
 				);
-			namedWindow("capture image",CV_WINDOW_NORMAL);
-			setWindowProperty("capture image",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);	
-			imshow("capture image",streamFrame);			
+			namedWindow("ck_frame",CV_WINDOW_NORMAL);
+			setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);	
+			imshow("ck_frame",streamFrame);			
 			
 			waitKey(20);	
 		}
@@ -231,12 +337,12 @@ void image_view()
 {
 	while(1)
 	{
-		Mat ATM_main_image = imread("atm_gui.png");
+		Mat ATM_main_image = imread("atm_gui_main.png");
 		Mat ATM_help_image = imread("img.png");
 
-		namedWindow("system_start_main",CV_WINDOW_NORMAL);
-		setWindowProperty("system_start_main",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-		imshow("system_start_main",ATM_main_image);
+		namedWindow("ck_frame",CV_WINDOW_NORMAL);
+		setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+		imshow("ck_frame",ATM_main_image);
 		waitKey(10);
 		
 		int c = waitKey(0);
@@ -244,9 +350,9 @@ void image_view()
 		{ 
 			while(1)
 			{
-				namedWindow("system_start_main",CV_WINDOW_NORMAL);
-				setWindowProperty("system_start_main",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-				imshow("system_start_main",ATM_help_image);
+				namedWindow("ck_frame",CV_WINDOW_NORMAL);
+				setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+				imshow("ck_frame",ATM_help_image);
 				waitKey(10);
 
 				int c = waitKey(0);
@@ -271,61 +377,55 @@ int main(int argc, const char** argv)
 {
 	//system("java atmView");
 	
-
-	/* ķ �ҷ����� */
-	// Options
-	int WIDTH = 1280;
-	int HEIGHT = 720;
-	int FPS = 30;
-
-	// Define the gstream pipeline
-	std::string pipeline = get_tegra_pipeline(WIDTH, HEIGHT, FPS);
-	std::cout << "Using pipeline: \n\t" << pipeline << "\n";
-
 	while(1)
 	{
-		cout<<"START"<<endl;
+		// 1. ATM System start image
 		image_view();
-	// Create OpenCV capture object. ensure it works.
-	//cv::VideoCapture capture(pipeline, cv::CAP_GSTREAMER);
-	cv::VideoCapture capture("/dev/video0");
-	if (!capture.isOpened()) {
-		std::cout << "Connection failed";
-		return -1;
-	}
 
-	Mat frame;
+		// 2. connecting cam
+		// Create OpenCV capture object. ensure it works.
+		//cv::VideoCapture capture(pipeline, cv::CAP_GSTREAMER);
+		cv::VideoCapture capture("/dev/video0");
+		if (!capture.isOpened()) {
+			std::cout << "Connection failed";
+			return -1;
+		}		
 
-	int i=0;
+		// 3. before taking photos of a user
+		// count down
+		CountDownForTakingPhotos(capture);
 
-	int numberforpercent = 0;
-	flag =-1;
+		// initiate variables
+		Mat frame;
+		int i=0;
+		int numberforpercent = 0;
+		flag =-1;
 
-	capture >> frame;
-	capture.read(frame);
+		// 4. capture a photo
+		capture >> frame;
+		//capture.read(frame);
 	
-	while(1)
-	{
-		if(flag<0)
+		while(1)
 		{
-			capture.read(frame);
+			if(flag<0)
+			{
+				capture.read(frame);
 
-			putText(frame, 
-				"DETECTING FACE...",
-				Point(100,100), // rocate
-				FONT_HERSHEY_COMPLEX, // font
-				1.3, // scale 2.0 = 2x bigger
- 				Scalar(255,255,255), // B,G,R color
-				6, // line thickness(optional)
-				CV_AA // anti-alias(optional)
-				);
-			namedWindow("capture image",CV_WINDOW_NORMAL);
-			setWindowProperty("capture image",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-        		imshow("capture image", frame);
-			waitKey(20);
+				putText(frame, 
+					"DETECTING ACC...",
+					Point(90,100), // rocate
+					FONT_HERSHEY_COMPLEX, // font
+					1.5, // scale 2.0 = 2x bigger
+ 					Scalar(255,255,255), // B,G,R color
+					5, // line thickness(optional)
+					CV_AA // anti-alias(optional)
+					);
+				namedWindow("ck_frame",CV_WINDOW_NORMAL);
+				setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+        			imshow("ck_frame", frame);
+				waitKey(20);
 
-			destroyWindow("system_start_main");
-			flag++;
+				flag++;
 		}
 		else if(flag == 0)
 		{
@@ -337,18 +437,18 @@ int main(int argc, const char** argv)
 					capture_face(frame, capture); // im
 
 					putText(frame, 
-						"DETECTING FACE...",
-						Point(100,100), // rocate
+						"DETECTING ACC...",
+						Point(90,100), // rocate
 						FONT_HERSHEY_COMPLEX, // font
-						1.3, // scale 2.0 = 2x bigger
+						1.5, // scale 2.0 = 2x bigger
  						Scalar(255,255,255), // B,G,R color
-						6, // line thickness(optional)
+						5, // line thickness(optional)
 						CV_AA // anti-alias(optional)
 						);
 
-					namedWindow("capture image",CV_WINDOW_NORMAL);
-					setWindowProperty("capture image",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
-					imshow("capture image", frame);
+					namedWindow("ck_frame",CV_WINDOW_NORMAL);
+					setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+					imshow("ck_frame", frame);
 					
 					waitKey(20);
 				}
@@ -361,15 +461,8 @@ int main(int argc, const char** argv)
 
 			if(flag == 1)
 			{
-			
-				//file_name = "/home/nvidia/darknet/pictures/2018-10-15_05:50:04.jpg";
+
 				string str = "./darknet detector test data/obj.data yolo-obj.cfg backup/yolo-obj_600.weights "+file_name;
-
-				//string str = "./darknet detector demo data/obj.data yolo-obj.cfg backup/yolo-obj_600.weights ""nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink""";
-
-//string str = "./darknet detector test data/obj.data yolo-obj.cfg backup/yolo-obj_600.weights  2018-10-15_05:47:50.jpg";
-	//string str = "./darknet detector test data/obj.data yolo-obj.cfg backup/yolo-obj_600.weights v_mask.jpg";
-
 			
 				system(str.c_str());
 
@@ -398,6 +491,21 @@ int main(int argc, const char** argv)
 				{	
 					flag=99;
 					capture.read(frame);
+
+					putText(frame, 
+						"DETECTING FACE...",
+						Point(90,100), // rocate
+						FONT_HERSHEY_COMPLEX, // font
+						1.5, // scale 2.0 = 2x bigger
+ 						Scalar(255,255,255), // B,G,R color
+						5, // line thickness(optional)
+						CV_AA // anti-alias(optional)
+						);
+
+					namedWindow("ck_frame",CV_WINDOW_NORMAL);
+					setWindowProperty("ck_frame",WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+					imshow("ck_frame", frame);
+					waitKey(20);
 					
 					compare_facetoface();
 					break;
