@@ -5,6 +5,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import java.awt.Image;
 import java.awt.event.KeyListener;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
@@ -16,6 +17,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.GraphicsEnvironment;
+import java.awt.GraphicsDevice;
 import java.io.IOException;
 
 public class DetectingCriminal extends JFrame implements ActionListener{
@@ -28,9 +31,17 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 	
 	public DetectingCriminal() {
 		
+		/* full screen - in window
+		this.setExtendedState( getExtendedState() | this.MAXIMIZED_BOTH);
 		this.setUndecorated(true); // full screen
 		setSize((int)dimen.width,(int)dimen.height); // size
-		setTitle("Detected Criminal");
+		*/
+		
+		// full screen - in ubuntu
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice device = env.getDefaultScreenDevice();
+		device.setFullScreenWindow(this);
+		
 		
 		setLayout(null);
 		
@@ -43,31 +54,39 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 		ImageIcon usr_img;
 		
 		if(user_identification.equals(new String("1"))) {                // user - hwayoung
-			criminal_img = new ImageIcon("criminal_hwayoung.png");
-			usr_img = new ImageIcon("user_hwayoung1.jpg");
+			criminal_img = new ImageIcon("crimial_hwa.jpg");
+			usr_img = new ImageIcon("atm_user.jpg");
 		}else {                                      // user - hayoung
 			criminal_img = new ImageIcon("img.png");
 			usr_img = new ImageIcon("img.png");
 		}
 		
+		// resize criminal image
+		Image new_criminal_img = criminal_img.getImage().getScaledInstance(320,240,java.awt.Image.SCALE_SMOOTH); // resize image
+		criminal_img = new ImageIcon(new_criminal_img);
+		
 		JLabel criminal_ImgBox = new JLabel(criminal_img);
-		criminal_ImgBox.setBounds(0,150,criminal_img.getIconWidth(),criminal_img.getIconHeight());
+		criminal_ImgBox.setBounds(30,150,criminal_img.getIconWidth(),criminal_img.getIconHeight());
+		
+		// resize user image
+		Image new_user_img = usr_img.getImage().getScaledInstance(320,240,java.awt.Image.SCALE_SMOOTH); // resize image
+		usr_img = new ImageIcon(new_user_img);
 		
 		JLabel usr_ImgBox = new JLabel(usr_img);
-		usr_ImgBox.setBounds(500,150,usr_img.getIconWidth()-30,usr_img.getIconHeight()-80);
+		usr_ImgBox.setBounds(380,150,usr_img.getIconWidth(),usr_img.getIconHeight());
 		
 		JLabel label_criminal = new JLabel("HWAYOUNG");
 		label_criminal.setBounds(100, 380,500,100);
 		label_criminal.setFont(new Font("Serif",Font.ITALIC,20));
 		
 		JLabel label_user = new JLabel("ATM USER");
-		label_user.setBounds(650, 380,500,100);
+		label_user.setBounds(500, 380,500,100);
 		label_user.setFont(new Font("Serif",Font.ITALIC,20));
 		
 		//JLabel label_accuracy = new JLabel("Index of Similarity : "+detection_accuracy +"% \n");	
 		JLabel label_accuracy = new JLabel("Index of Similarity : 0% \n");
-		label_accuracy.setBounds(130, 430,600,100);
-		label_accuracy.setFont(new Font("Serif",Font.ITALIC,50));
+		label_accuracy.setBounds(180, 480,500,80);
+		label_accuracy.setFont(new Font("Serif",Font.ITALIC,30));
 		label_accuracy.setForeground(Color.RED);
 		
 		this.add(title);
@@ -87,7 +106,7 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 			label_accuracy.setText("Index of Similarity : "+i +"% \n");
 			SwingUtilities.updateComponentTreeUI(this);
 			try {
-				Thread.sleep(18);
+				Thread.sleep(30);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -98,7 +117,7 @@ public class DetectingCriminal extends JFrame implements ActionListener{
 	
 	class MyKeyListener extends KeyAdapter{
 		public void keyPressed(KeyEvent e) {
-			System.out.println("pressed Key : "+e.getKeyCode());
+			//System.out.println("pressed Key : "+e.getKeyCode());
 		
 			if(e.getKeyCode()==27) { // end
 				System.exit(0);
